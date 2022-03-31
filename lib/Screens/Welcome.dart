@@ -42,14 +42,14 @@ class Welcome extends StatelessWidget {
                     style: GoogleFonts.tinos(
                         color: Colors.black,
                         fontSize: height / 22.31,
-                        fontWeight: FontWeight.bold),
+                        fontWeight: FontWeight.normal),
                   ),
                   Text(
                     "Passion In Your",
                     style: GoogleFonts.tinos(
                         color: Colors.black,
                         fontSize: height / 22.31,
-                        fontWeight: FontWeight.bold),
+                        fontWeight: FontWeight.normal),
                   ),
                   Row(
                     children: [
@@ -58,7 +58,7 @@ class Welcome extends StatelessWidget {
                         style: GoogleFonts.tinos(
                             color: Colors.black,
                             fontSize: height / 22.31,
-                            fontWeight: FontWeight.bold),
+                            fontWeight: FontWeight.normal),
                       ),
                       Text(
                         "Free ",

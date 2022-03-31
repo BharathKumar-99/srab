@@ -41,6 +41,12 @@ class _LoginState extends State<Login> {
       },
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: CustomColor.cosmic_red, width: 2.0),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: CustomColor.cosmic_red, width: 2.0),
+        ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: CustomColor.cosmic_red, width: 2.0),
         ),
@@ -49,12 +55,19 @@ class _LoginState extends State<Login> {
         ),
         hintText: 'Enter your Email',
       ),
+      validator: (val) =>
+          val!.isEmpty || !val.contains("@") ? "Enter a valid eamil" : null,
     );
-
     final passwordfield = TextFormField(
       controller: passwordctl,
       decoration: InputDecoration(
         focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: CustomColor.cosmic_red, width: 2.0),
+        ),
+        errorBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: CustomColor.cosmic_red, width: 2.0),
+        ),
+        focusedErrorBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: CustomColor.cosmic_red, width: 2.0),
         ),
         enabledBorder: const OutlineInputBorder(
@@ -69,6 +82,7 @@ class _LoginState extends State<Login> {
       validator: (val) => val!.length < 6 ? 'Password too short.' : null,
       onSaved: (val) {
         _password = val!;
+        _password = val;
         passwordctl.text = val;
       },
       textInputAction: TextInputAction.done,
@@ -84,10 +98,12 @@ class _LoginState extends State<Login> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(height / 97.625),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
+            
             children: [
-              SvgPicture.asset("assets/login_back.svg"),
+              Align(
+                alignment: Alignment.topLeft,
+                child: SvgPicture.asset("assets/login_back.svg")),
               SizedBox(
                 height: twentyheight,
               ),
@@ -146,17 +162,22 @@ class _LoginState extends State<Login> {
                   setState(() {
                     _isloading =true;
                   });
-                   result=
+                  
+                    if (_formkey.currentState!.validate()) {
+                     result=
                    context.read<AuthenticationServices>().signin(
                      email: emailctl.text.trim(),
                      password: passwordctl.text.trim()
-                     
+                      
                    );
+                   Navigator.pushNamed(context, '/Redirector');
+
+                    }
                    print(result);
                     setState(() {
                     _isloading =false;
                   });
-                   Navigator.pushNamed(context, '/Redirector');
+                  
                   },
                   child: Padding(
                     padding: EdgeInsets.all(height / 78.1),
@@ -187,10 +208,13 @@ class _LoginState extends State<Login> {
                       "Don't have an account? ",
                       style: GoogleFonts.tinos(fontSize: 20),
                     ),
-                    Text(
-                      "Create now",
-                      style: GoogleFonts.tinos(
-                          color: CustomColor.cosmic_red, fontSize: 20),
+                    GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, '/Register'),
+                      child: Text(
+                        "Create now",
+                        style: GoogleFonts.tinos(
+                            color: CustomColor.cosmic_red, fontSize: 20),
+                      ),
                     ),
                   ],
                 ),

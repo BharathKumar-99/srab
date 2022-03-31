@@ -1,12 +1,14 @@
-// ignore_for_file: non_constant_identifier_names, unused_field
+// ignore_for_file: non_constant_identifier_names, unused_field, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:srab/Services/autentication.dart';
 import 'package:srab/Utils/CustomColors.dart';
 
 class Register extends StatefulWidget {
-  Register({Key? key}) : super(key: key);
+  const Register({Key? key}) : super(key: key);
 
   @override
   State<Register> createState() => _RegisterState();
@@ -62,7 +64,7 @@ class _RegisterState extends State<Register> {
         hintText: 'Enter your Email',
       ),
       validator: (val) =>
-          val!.isEmpty || !val.contains("@") ? "enter a valid eamil" : null,
+          val!.isEmpty || !val.contains("@") ? "Enter a valid eamil" : null,
     );
     final emailName = TextFormField(
       controller: signupname,
@@ -218,27 +220,30 @@ class _RegisterState extends State<Register> {
               Align(
                 alignment: Alignment.center,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: ()async {
                     setState(() {
                       _isloading = true;
                     });
                     if (_formkeyregister.currentState!.validate()) {
-                      final snackbar = SnackBar(content: const Text("data"));
-                      _Scafoldkey.currentState!.showSnackBar(snackbar);
+                      var res=await context.read<AuthenticationServices>().signup(email: emailsignup.text, fullName: signupname.text,
+                     password: passwordsignup.text,);
+Navigator.pushNamed(context, '/Redirector');
                     }
+                   
                     setState(() {
                       _isloading = false;
                     });
+                   
                   },
                   child: Padding(
                     padding: EdgeInsets.all(height / 78.1),
                     child: Text(
                       _isloading ? "Loading" : "Signup",
-                      style: TextStyle(fontSize: 25),
+                      style: const TextStyle(fontSize: 25),
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    side: BorderSide(
+                    side: const BorderSide(
                       width: 2.0,
                       color: CustomColor.cosmic_red,
                     ),
@@ -248,24 +253,26 @@ class _RegisterState extends State<Register> {
                   ),
                 ),
               ),
-              Expanded(
-                  child: Align(
-                alignment: Alignment.bottomCenter,
+              Align(
+               alignment: Alignment.bottomCenter,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account? ",
-                      style: GoogleFonts.tinos(fontSize: 20),
-                    ),
-                    Text(
-                      "Create now",
-                      style: GoogleFonts.tinos(
-                          color: CustomColor.cosmic_red, fontSize: 20),
-                    ),
-                  ],
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Already have an account? ",
+                  style: GoogleFonts.tinos(fontSize: 20),
                 ),
-              ))
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, '/Login'),
+                  child: Text(
+                    "Signin now",
+                    style: GoogleFonts.tinos(
+                        color: CustomColor.cosmic_red, fontSize: 20),
+                  ),
+                ),
+              ],
+                ),
+              )
             ],
           ),
         ),
