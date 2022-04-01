@@ -42,7 +42,8 @@ class AuthenticationServices {
           .set(user.toJson());
       return "Signedup";
     } on FirebaseAuthException catch (e) {
-      return e.message.toString();
+      print(e.toString());
+      return e.toString();
     }
   }
 }

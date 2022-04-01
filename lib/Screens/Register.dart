@@ -139,7 +139,10 @@ class _RegisterState extends State<Register> {
             child:
                 Icon(_obscureText ? Icons.visibility_off : Icons.visibility)),
       ),
-      validator: (val) => val!.length < 6 ? 'Password too short.' : null,
+      validator: (val) => 
+      val!.length < 6 ? 'Password too short.' : null
+
+       ,
       onSaved: (val) {
         _passwordlength = val!;
         _password = val;
@@ -157,7 +160,10 @@ class _RegisterState extends State<Register> {
             children: [
               Align(
                   alignment: Alignment.topLeft,
-                  child: SvgPicture.asset("assets/login_back.svg")),
+                  child: IconButton(icon: SvgPicture.asset("assets/login_back.svg"), onPressed: () { 
+                  Navigator.pop(context);
+                 },)
+                  ),
               SizedBox(
                 height: twentyheight,
               ),
@@ -224,12 +230,15 @@ class _RegisterState extends State<Register> {
                     setState(() {
                       _isloading = true;
                     });
-                    if (_formkeyregister.currentState!.validate()) {
+                    if (_formkeyregister.currentState!.validate() && passwordsignup.text==confirmpasswordsignup.text) {
                       var res=await context.read<AuthenticationServices>().signup(email: emailsignup.text, fullName: signupname.text,
                      password: passwordsignup.text,);
-Navigator.pushNamed(context, '/Redirector');
+                      Navigator.pushNamed(context, '/Redirector');
                     }
-                   
+                   if(passwordsignup.text!=confirmpasswordsignup.text){
+                     SnackBar snackBar=SnackBar(content: Text("Password Mismatch"));
+                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                   }
                     setState(() {
                       _isloading = false;
                     });

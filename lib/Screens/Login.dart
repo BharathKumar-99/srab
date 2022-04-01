@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:srab/Services/autentication.dart';
@@ -103,7 +104,13 @@ class _LoginState extends State<Login> {
             children: [
               Align(
                 alignment: Alignment.topLeft,
-                child: SvgPicture.asset("assets/login_back.svg")),
+
+                child:
+                IconButton(icon: SvgPicture.asset("assets/login_back.svg"), onPressed: () { 
+                  Navigator.pop(context);
+                 },)
+                
+                 ),
               SizedBox(
                 height: twentyheight,
               ),
