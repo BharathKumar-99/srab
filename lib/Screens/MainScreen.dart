@@ -58,15 +58,15 @@ setState(() {
     items:  <BottomNavigationBarItem>[
       BottomNavigationBarItem(
         icon: Icon(Icons.home,color: _page==0? CustomColor.cosmic_red:Colors.grey),
-        label: 'Home',
+        label: '',
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.add,color: _page==1? CustomColor.cosmic_red:Colors.grey),
-        label: 'Camera',
+        icon: Icon(Icons.add_a_photo,color: _page==1? CustomColor.cosmic_red:Colors.grey),
+        label: '',
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.person,color: _page==2? CustomColor.cosmic_red:Colors.grey),
-        label: 'Chats',
+        label: '',
       ),
       
     ],

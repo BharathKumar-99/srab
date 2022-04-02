@@ -11,9 +11,19 @@ class Home extends StatefulWidget {
 
   @override
   State<Home> createState() => _HomeState();
+
+ 
 }
 
 class _HomeState extends State<Home> {
+   List<String> chip = [
+      "Funny",
+      "Action",
+      "Anime",
+      "Horror",
+      "Fantacy",
+      "Adventure"
+    ];
   var username;
 
   @override
@@ -22,18 +32,13 @@ class _HomeState extends State<Home> {
     super.initState();
     username = "User";
   }
-
+ getchip(){
+      return chip;
+    }
   @override
   Widget build(BuildContext context) {
-    List<String> chip = [
-      "Funny",
-      "Action",
-      "Anime",
-      "Horror",
-      "Fantacy",
-      "Adventure"
-    ];
-
+   
+   
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
