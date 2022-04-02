@@ -93,7 +93,7 @@ class _LoginState extends State<Login> {
     var height = MediaQuery.of(context).size.height;
     var twentyheight = height / 39.5;
     var height35 = height / 22.31;
-    var heigth25 = height35 / 31.24;
+    var heigth25 = height / 31.24;
     //var width=MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(

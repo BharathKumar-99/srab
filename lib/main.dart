@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:srab/Screens/MainScreen.dart';
 import 'Screens/Home.dart';
 import 'Screens/Login.dart';
 import 'Screens/Register.dart';
@@ -36,9 +37,9 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'SRAB',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.red,
         ),
         initialRoute: "/",
         routes: {
@@ -48,6 +49,8 @@ class MyApp extends StatelessWidget {
           "/Register": (context) =>  Register(),
           "/Home": (context) => const Home(),
           "/Redirector": (context) => const Autenticationwrapper(),
+          "/MainScreen": (context) =>  MainScreen(),
+
         },
       ),
     );
@@ -61,7 +64,7 @@ class Autenticationwrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser=context.watch<User?>();
     if(firebaseUser != null){
-      return const Home();
+      return  MainScreen();
     }else {
       return const Welcome();
     }

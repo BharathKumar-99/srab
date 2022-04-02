@@ -1,61 +1,145 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:srab/Utils/CustomColors.dart';
 
-class Home extends StatelessWidget {
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:srab/Utils/CustomColors.dart';
+import 'package:srab/Widgets/Widgets.dart';
+
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  var username;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    username = "User";
+  }
+
+  @override
   Widget build(BuildContext context) {
+    List<String> chip = [
+      "Funny",
+      "Action",
+      "Anime",
+      "Horror",
+      "Fantacy",
+      "Adventure"
+    ];
+
     return Scaffold(
-       appBar: AppBar(
-         toolbarHeight: 100,
-          automaticallyImplyLeading: false,
-         backgroundColor: Colors.white,
-         elevation: 0,
-          title:  Padding(
-            padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-            child: TextFormField(
-                decoration: const InputDecoration(
-                   focusedBorder: OutlineInputBorder(
-                     borderRadius: BorderRadius.all(Radius.circular(25)),
-                              borderSide: BorderSide(
-                                  color: CustomColor.cosmic_red, width: 4.0),
-                            ),
-                            enabledBorder:  OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(25)),
-                              borderSide:  BorderSide(
-                                  color: CustomColor.cosmic_red, width: 4.0),
-                            ),
-                    hintText: 'Search',
-                      ),
-                      
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const CustomText(
+          text: "SRAB",
+          size: 23,
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.search),
+            iconSize: 35,
+            color: Colors.black,
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.person),
+            iconSize: 35,
+           color: Colors.black,
+          ),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              "Hello " + username + "!",
+              style: GoogleFonts.lobster(
+                  fontSize: 23, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              "Whats on your mind?",
+              style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text("Genre",
+                style: GoogleFonts.inter(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black)),
+            Container(
+              height: 50,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemCount: chip.length,
+                itemBuilder: (ctx, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                    child: Chip(label: Text(chip[index])),
+                  );
+                },
               ),
-          ),
-            actions:  <Widget>[
-              
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: GestureDetector(
-                  onTap: () async => await FirebaseAuth.instance.signOut(),
-                  child: Container(
-                      width: 80.0,
-                      height: 80.0,
-                      decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          image:  DecorationImage(
-                          fit: BoxFit.fill,
-                          image:  NetworkImage(
-                     "https://i.imgur.com/BoN9kdC.png")
-                     ),
-                ),
-                ),
-                ),
-              )
-   
-  ],
-          ),
- 
+            ),
+            Text("Trending",
+                style: GoogleFonts.inter(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black)),
+            // Expanded(
+            //   child: ListView.builder(
+            //     itemBuilder: (context, index) {
+            //       return
+            //     },
+            //   ),
+            // ),
+            Expanded(
+              child: Padding(
+                padding:  EdgeInsets.all(10.0),
+                child: StreamBuilder(
+                  stream:FirebaseFirestore.instance.collection('posts').snapshots(), 
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) { 
+                    if(snapshot.connectionState == ConnectionState.waiting){
+                      return const Center(
+                        child: CircularProgressIndicator(color: CustomColor.cosmic_red),
+                      );
+                      
+                    }
+                    return ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) => Post_card(
+                          snap: snapshot.data!.docs[index].data(),
+                        ),
+            
+                      );
+                   },
+              ),
+              ),
+            )
+          ],
+        ),
+      ),
+
+     
     );
   }
 }
+
