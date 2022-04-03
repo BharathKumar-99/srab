@@ -1,20 +1,20 @@
-import 'dart:ffi';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:srab/Services/Firestore_method.dart';
-
-import '../Widgets/Widgets.dart';
-import 'Home.dart';
+import 'package:uuid/uuid.dart';
 
 class AddPost extends StatefulWidget {
-  AddPost({Key? key}) : super(key: key);
+  const AddPost({Key? key}) : super(key: key);
 
   @override
   State<AddPost> createState() => _AddPostState();
@@ -22,17 +22,26 @@ class AddPost extends StatefulWidget {
 
 class _AddPostState extends State<AddPost> {
   File? _file;
+  late String url;
+  List<String> selectedChoices = [];
   ImagePicker picker = ImagePicker();
+  final List<String> _filters = [];
   final TextEditingController _storyName = TextEditingController();
   final TextEditingController _shortdescription = TextEditingController();
   final TextEditingController _fulldescription = TextEditingController();
+
+
+
+
+
+
 
   _selectimage(BuildContext context) async {
     return showDialog(
         context: context,
         builder: (context) {
           return SimpleDialog(
-            title: Text("Create a post"),
+            title: const Text("Create a post"),
             children: [
               SimpleDialogOption(
                   child: const Text(
@@ -55,8 +64,14 @@ class _AddPostState extends State<AddPost> {
   }
 
   @override
-  void dispose() {
+  void initState() {
     
+    super.initState();
+    getdata();
+  }
+
+  @override
+  void dispose() {
     super.dispose();
 
     _shortdescription.dispose();
@@ -64,21 +79,26 @@ class _AddPostState extends State<AddPost> {
     _storyName.dispose();
   }
 
+  var username = {};
+  bool isLoading = true;
 
- addposttofirebase(String username,
-String picurl,
-String uid,) async{
-try{
-String res=await FireStoreMethods().uploadPost(
-  storyname, picurl, username, detailsshort, uid, fullstory, genere)
-}catch
+  var firebaseUser = FirebaseAuth.instance.currentUser;
+  void getdata() async {
+    try {
+      final firestoreInstance = FirebaseFirestore.instance;
+      var snap = await firestoreInstance
+          .collection("users")
+          .doc(firebaseUser!.uid)
+          .get();
 
+      username = snap.data()!;
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+    }
   }
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +109,7 @@ String res=await FireStoreMethods().uploadPost(
     var height200 = height / 3.9;
     var height75 = height / 11.61;
 
-    final User user=Provider.of(context).getUser();
+    // final User user=Provider.of(context).getUser();
 
     List<String> chip = [
       "Funny",
@@ -137,7 +157,7 @@ String res=await FireStoreMethods().uploadPost(
             SizedBox(
               height: heigth25,
             ),
-            Text("Story Name"),
+          const  Text("Story Name"),
             TextField(
               controller: _storyName,
               decoration: const InputDecoration(
@@ -150,17 +170,34 @@ String res=await FireStoreMethods().uploadPost(
             SizedBox(
               height: heigth25,
             ),
-            Text("Tags"),
+          const  Text("Tags"),
             Wrap(
               spacing: 10,
               children: [
-                for (var i in chip) Chip(label: Text(i)),
+                for (var i in chip)
+                  FilterChip(
+                    backgroundColor: Colors.tealAccent[200],
+                    label: Text(i),
+                    selected: _filters.contains(i),
+                    selectedColor: Colors.purpleAccent,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        if (selected) {
+                          _filters.add(i);
+                        } else {
+                          _filters.removeWhere((String name) {
+                            return name == i;
+                          });
+                        }
+                      });
+                    },
+                  ),
               ],
             ),
             SizedBox(
               height: heigth25,
             ),
-            Text("Short Description"),
+          const  Text("Short Description"),
             Container(
               margin: EdgeInsets.all(12),
               height: height75,
@@ -173,11 +210,10 @@ String res=await FireStoreMethods().uploadPost(
                 ),
               ),
             ),
-
             SizedBox(
               height: heigth25,
             ),
-             Text("Full Story"),
+           const Text("Full Story"),
             Container(
               margin: const EdgeInsets.all(12),
               height: height200,
@@ -190,16 +226,66 @@ String res=await FireStoreMethods().uploadPost(
                 ),
               ),
             ),
-
             SizedBox(
               height: heigth25,
             ),
-            ElevatedButton(onPressed: ()=>addposttofirebase(), child: Text("Post Story"))
+            ElevatedButton(
+                onPressed: () async {
+                  FirebaseStorage ref = FirebaseStorage.instance;
+
+                  var uuid = const Uuid();
+                  var filename = uuid.v1();
+                  print(filename);
+                  if (_file == null) {
+                    print("no");
+                   
+
+
+showDialog(
+        context: context,
+        builder: (context) {
+          return const SimpleDialog(
+            title: Text("Error"),
+            children: [
+              SimpleDialogOption(
+                  child: Text("No Image is found"),
+              )
+                  
+            ],
+          );
+        });
+
+
+
+
+
+                  } else {
+                    try {
+                      await ref.ref("Post/$filename").putFile(_file!);
+
+                      url = await ref.ref("Post/$filename").getDownloadURL();
+                      FireStoreMethods fireStoreMethods = FireStoreMethods();
+                      var res = fireStoreMethods.uploadPost(
+                          _storyName.text.trim(),
+                          url,
+                          username['username'],
+                          _shortdescription.text.trim(),
+                          firebaseUser!.uid,
+                          _fulldescription.text.trim(),
+                          _filters);
+                     
+                    } on FirebaseException catch (e) {
+                      print(e);
+                      
+                    }
+                  }
+                },
+                child: const Text("Post Story"))
           ],
         ),
       ),
     );
   }
-
- 
 }
+ 
+ 

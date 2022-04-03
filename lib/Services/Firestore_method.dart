@@ -1,6 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:srab/Screens/AddPost.dart';
 import 'package:uuid/uuid.dart';
 
 import 'Post.dart';
@@ -11,8 +14,8 @@ class FireStoreMethods {
 
   Future<String> uploadPost(  final String storyname,
   
-  final Uint8List picurl,
- String username,
+  final String picurl,
+  String username,
   final String detailsshort,
   final String uid,
   final String fullstory,
@@ -21,14 +24,16 @@ class FireStoreMethods {
    
     String res = "Some error occurred";
     try {
+      CollectionReference users=FirebaseFirestore.instance
+          .collection('Posts');
+     
       
-      String photoUrl =
-          await StorageMethods().uploadImageToStorage('posts', picurl, true);
+     
       String postId = const Uuid().v1(); 
       Post post = Post
       (storyname :storyname,
        id :postId,
-        picurl:photoUrl,
+        picurl:picurl,
          authorname:username,
           detailsshort:detailsshort,
            fullstory:fullstory,
@@ -36,11 +41,22 @@ class FireStoreMethods {
              genere:genere,
               uid: uid,
              );
-      _firestore.collection('posts').doc(postId).set(post.toJson());
-      res = "success";
+
+             await users
+          .doc(postId)
+          .set(post.toJson());
+      return "done";
+      
+      
+      
     } catch (err) {
       res = err.toString();
     }
+
+
+
+
+
     return res;
   }
 

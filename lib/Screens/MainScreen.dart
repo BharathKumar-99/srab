@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:srab/Screens/AddPost.dart';
 import 'package:srab/Screens/Home.dart';
 import 'package:srab/Utils/CustomColors.dart';
@@ -12,6 +15,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 
+ 
+  
 
   int _page=0;
 
@@ -44,9 +49,9 @@ setState(() {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
-    children: [
-      const Home(),
-      AddPost(),
+    children:  const [
+      Home(),
+     AddPost(),
 
     ],
     controller: pageController,
