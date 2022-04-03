@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:srab/Screens/AddPost.dart';
 import 'package:srab/Screens/Home.dart';
+import 'package:srab/Screens/Profile.dart';
 import 'package:srab/Utils/CustomColors.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,68 +15,60 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  int _page = 0;
 
- 
-  
+  late PageController pageController;
 
-  int _page=0;
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController();
+  }
 
-late PageController pageController;
+  @override
+  void dispose() {
+    super.dispose();
+    pageController.dispose();
+  }
 
-@override
-void initState() {
-  super.initState();
-  pageController =PageController();
-}
+  navigationtaped(int page) {
+    pageController.jumpToPage(page);
+  }
 
-
-@override
-void dispose() {
-  
-  super.dispose();
-  pageController.dispose();
-}
-navigationtaped(int page){
-pageController.jumpToPage(page);
-}
-
-void pagechanged(int page){
-setState(() {
-  _page=page;
-});
-}
+  void pagechanged(int page) {
+    setState(() {
+      _page = page;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
-    children:  const [
-      Home(),
-     AddPost(),
-
-    ],
-    controller: pageController,
-    onPageChanged: pagechanged,
-    
+        children: const [Home(), AddPost(), ProfileScreen()],
+        controller: pageController,
+        onPageChanged: pagechanged,
       ),
-       bottomNavigationBar: BottomNavigationBar(
-         onTap: navigationtaped,
-    items:  <BottomNavigationBarItem>[
-      BottomNavigationBarItem(
-        icon: Icon(Icons.home,color: _page==0? CustomColor.cosmic_red:Colors.grey),
-        label: '',
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: navigationtaped,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home,
+                color: _page == 0 ? CustomColor.cosmic_red : Colors.grey),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_a_photo,
+                color: _page == 1 ? CustomColor.cosmic_red : Colors.grey),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person,
+                color: _page == 2 ? CustomColor.cosmic_red : Colors.grey),
+            label: '',
+          ),
+        ],
       ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.add_a_photo,color: _page==1? CustomColor.cosmic_red:Colors.grey),
-        label: '',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.person,color: _page==2? CustomColor.cosmic_red:Colors.grey),
-        label: '',
-      ),
-      
-    ],
-  ),
     );
   }
 }
